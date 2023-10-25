@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import googleLogo from "../../assets/logos/google.png";
 import microsoftLogo from "../../assets/logos/microsoft.png";
 import facebookLogo from "../../assets/logos/facebook.png";
+import {signUpWithEmailAndPassword, signInWithProviders} from "../../utils/auth/requestAuthSupabase";
 
 function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +38,15 @@ function LoginForm() {
         onSubmit,
     });
 
+    const handleProvidersSignIn = async (provider) => {
+        await signInWithProviders(provider)
+    }
+
+    const handleEmailAndPasswordSignIn = async () => {
+        const signInResponse = await signUpWithEmailAndPassword();
+        console.log(signInResponse)
+
+    }
     return (
         <form className="flex flex-col mt-10 items-center bg-accountableLightBackground dark:bg-accountableBlack">
             <div className="w-full relative my-1 lg:w-1/4">
@@ -111,7 +121,7 @@ function LoginForm() {
             <div className="w-full lg:w-1/4 flex flex-col gap-y-4">
                 <button
                     className="h-12 px-7 py-2 w-full rounded-lg bg-[#fff] dark:bg-accountableDarkBlack dark:text-accountableLightBackground text-accountableBlack flex items-center justify-center gap-x-3 border border-[#0D0D0D33]"
-                    onClick={() => {}}
+
                 >
                     <img src={googleLogo} alt="Sign in with Google" />
                     <span>Sign In With Google</span>
