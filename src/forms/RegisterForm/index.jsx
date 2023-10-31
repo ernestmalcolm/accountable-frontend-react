@@ -35,7 +35,7 @@ function RegisterForm() {
             setButton("bg-green-500");
             setButtonText("Success")
         }
-        setAlertClassName(message.charAt(0) === "U" || message.charAt(0) === "S" ? "text-red-500 border-red-500 bg-meta-7/10" : "text-green-500 border-green-500 bg-green-500/10");
+        setAlertClassName(message.charAt(0) === "U" || message.charAt(0) === "S" ? "text-red-500 border-red-500 bg-red-300/10" : "text-green-500 border-green-500 bg-green-500/10");
     };
 
 

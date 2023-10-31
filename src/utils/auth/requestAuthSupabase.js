@@ -42,3 +42,20 @@ export async function signInWithProviders(provider) {
         window.alert("Did not work")
     }
 }
+
+export async function LoginUserWithEmailAndPassword(email, password, dispMessage,ptrfunction) {
+    const {data, error} = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        }
+    )
+    if (!error) {
+        const sessionData = {
+            token: data?.session,
+        };
+        document.cookie = `session=${encodeURIComponent(JSON.stringify(sessionData))};`;
+        ptrfunction(true);
+    } else {
+        dispMessage(error.message);
+    }
+}

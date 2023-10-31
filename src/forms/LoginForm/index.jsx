@@ -8,97 +8,126 @@ import { useFormik } from "formik";
 import googleLogo from "../../assets/logos/google.png";
 import microsoftLogo from "../../assets/logos/microsoft.png";
 import facebookLogo from "../../assets/logos/facebook.png";
-import {signUpWithEmailAndPassword, signInWithProviders} from "../../utils/auth/requestAuthSupabase";
+import {
+    signUpWithEmailAndPassword,
+    signInWithProviders,
+    LoginUserWithEmailAndPassword
+} from "../../utils/auth/requestAuthSupabase";
 
 function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const Router = useNavigate();
+    const [eMail, setEMail] = useState("")
+    const [password, setPassword] = useState("")
+    const [displayMessage, setDisplayMessage] = useState("")
+    const [ptr, setPtr] = useState("")
+    const [dispClassName, setDispClassName] = useState("")
+    const [button, setButton] = useState("")
+    const [buttonText, setButtonText] = useState("Login")
+    let clicked = false;
 
     // Remember me - state
     const [rememberMe, setRememberMe] = useState();
 
-    const onSubmit = async (values, actions) => {
-        setIsLoading(true);
-        // TO-DO: Send API request to server
-        await axios
-            .post("", {
-                email: values.email,
-                password: values.password,
-            })
-            .then((res) => {})
-            .catch((err) => {});
+    const dispMessage = (message) => {
+        setDisplayMessage(message);
+        if (message) {
+            setButton("bg-accountableDarkGreen");
+            setButtonText("Error, Try Again");
+        } else {
+            setButton("bg-accountableDarkGreen")
+            setButtonText("Success")
+        }
+        setDispClassName(message ?  "text-red-500 border-red-500 bg-red-300/10" : "text-green-500 border-green-500 bg-green-300/10");
     };
 
-    const { values, errors, handleChange, handleSubmit } = useFormik({
-        initialValues: {
-            email: "",
-            password: "",
-        },
-        validationSchema: LoginFormSchema,
-        onSubmit,
-    });
+    // const onSubmit = async (values, actions) => {
+    //     setIsLoading(true);
+    //     // TO-DO: Send API request to server
+    //     await axios
+    //         .post("", {
+    //             email: values.email,
+    //             password: values.password,
+    //         })
+    //         .then((res) => {})
+    //         .catch((err) => {});
+    // };
 
-    const handleProvidersSignIn = async (provider) => {
-        await signInWithProviders(provider)
+    // const { values, errors, handleChange, handleSubmit } = useFormik({
+    //     initialValues: {
+    //         email: "",
+    //         password: "",
+    //     },
+    //     validationSchema: LoginFormSchema,
+    //     onSubmit,
+    // });
+
+    // const handleProvidersSignIn = async (provider) => {
+    //     await signInWithProviders(provider)
+    // }
+
+    const ptrfunction = (checker) => {
+        setPtr(checker)
     }
 
-    const handleEmailAndPasswordSignIn = async () => {
-        const signInResponse = await signUpWithEmailAndPassword();
-        console.log(signInResponse)
-
+    const handleEMail = (e) => {
+        setEMail(e.target.value)
     }
+
+    const handlePassword = (e) => {
+        setPassword(e.target.value)
+    }
+
+    const handleSubmit = async (e) => {
+        clicked = true
+        setButton(clicked ? "bg-amber-500" : "bg-accountableGrey")
+        setButtonText("Wait")
+        e.preventDefault()
+        await LoginUserWithEmailAndPassword(eMail, password, dispMessage, ptrfunction)
+    }
+
+    if (ptr) {
+        Router('/dashboard')
+    }
+
     return (
         <form className="flex flex-col mt-10 items-center bg-accountableLightBackground dark:bg-accountableBlack">
             <div className="w-full relative my-1 lg:w-1/4">
-                {/* <label
-          htmlFor="email"
-          className="text-sm absolute left-0 text-solyntaYellow font-semibold"
-        >
-          Email Address
-        </label> */}
+                {displayMessage &&
+                    <div role="alert" className={`alert ${dispClassName} rounded border-s-4 p-4`}>
+                        <p className="mt-2 text-sm">
+                            <div>{displayMessage}</div>
+                        </p>
+                    </div>}
+
                 <input
                     className="w-full h-16 bg-cosretBlue-300 px-8 dark:text-accountableLightBackground text-accountableBlack text-sm mt-7 focus:outline-none border-[2px] rounded-lg bg-transparent border-[#CDCDCD] dark:border-accountableGrey placeholder:text-accountableBlack placeholder:dark:text-accountableLightBackground"
                     id="email"
                     type="email"
                     name="email"
-                    value={values.email}
-                    onChange={handleChange}
+                    onChange={handleEMail}
                     placeholder="Email Address"
                 />
 
-                <p className="text-left dark:text-accountableLightBackground text-accountableBlack mt-3 text-xs">
-                    {errors.email ? errors.email : ""}
-                </p>
             </div>
-            <div className="w-full relative my-1 lg:w-1/4">
-                {/* <label
-          htmlFor="password"
-          className="text-sm absolute left-0 text-solyntaYellow font-semibold"
-        >
-          Password
-        </label> */}
+            <div className="w-full relative lg:w-1/4">
                 <input
                     className="w-full h-16 bg-cosretBlue-300 px-8 dark:text-accountableLightBackground text-accountableBlack text-sm mt-7 focus:outline-none border-[2px] rounded-lg bg-transparent border-[#CDCDCD] dark:border-accountableGrey placeholder:text-accountableBlack placeholder:dark:text-accountableLightBackground"
                     id="password"
                     type="password"
                     name="password"
-                    value={values.password}
-                    onChange={handleChange}
+                    onChange={handlePassword}
                     placeholder="Password"
                 />
-
-                <p className="text-left dark:text-accountableLightBackground text-accountableBlack mt-3 text-xs">
-                    {errors.password ? errors.password : ""}
-                </p>
             </div>
 
             {/* Action buttons */}
-            <div className="w-full lg:w-1/4">
+            <div className="w-full pt-5 lg:w-1/4">
                 <button
-                    className="h-12 px-7 py-2 w-full font-bold dark:text-accountableLightBackground text-accountableBlack rounded-lg bg-[#CDCDCD] dark:bg-accountableGrey "
-                    onClick={() => {}}
+                    className={`h-12 px-7 py-2 w-full font-bold dark:text-accountableLightBackground text-accountableBlack rounded-lg ${button} dark:bg-accountableGrey`}
+                    onClick={handleSubmit}
                 >
-                    Sign In
+                    {buttonText}
                 </button>
                 {/* Don't have an account? */}
                 <p className="text-center dark:text-accountableLightBackground text-accountableBlack mt-4">
